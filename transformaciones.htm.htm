@@ -14,9 +14,8 @@
         </style>
     </head>
     <body>
-        <div id="text">Omar Santiago Martínez Pachón<br/>
-            Computación Grafica<br/>
-            Cubo <br/>
+        <div id="text">Omar Martínez - (6000633)<br/>
+            Computación Gráfica - Cubo (Transformadas)<br/>
         </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r94/three.min.js"></script>
     <script>
@@ -38,30 +37,34 @@
         var x = new THREE.Vector3( 1, 0, 0 );
         var y = new THREE.Vector3( 0, 1, 0 );
         var z = new THREE.Vector3( 0, 0, 1 );
-        var color2 = new THREE.Color( 0x333333 );  /// 0x333333
-        var colorR = new THREE.Color( 0xAA0000 );  ///0xAA0000
+        var color2 = new THREE.Color( 0x333333 ); 
+        var colorR = new THREE.Color( 0xAA0000 ); 
         var colorG = new THREE.Color( 0x00AA00 );
         var colorB = new THREE.Color( 0x0000AA );
 
-        //Create a guide (guilla)
+        //CUADRICULA
         var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2);
+        scene.add(gridHelperXZ);
 
-        //Create axes
+        //FLECHAS DE LOS EJES
         var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
         var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
         var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+        scene.add(arrowX);
+        scene.add(arrowY);
+        scene.add(arrowZ);
             
-        //Camera
+        //CAMARA
         camera.position.x = 000;
-        camera.position.y = 100;
+        camera.position.y = 080;
         camera.position.z = 400;
         camera.lookAt(scene.position);
 
-        //Create objects
+        //-----------------------------------------------------------------------------------------------------------
 
-        //Funtion to generate a cube
+        //FUNCIÓN (CUBO)
         
-        function Crear_Cubo(posini, lado, color)
+        function cubo(posini, lado, color)
         { 
             /**
              * Para crear el cubo se usan dos parametos: 
@@ -70,6 +73,10 @@
              * 
              * A las posiciones iniciales se les suma la mitad del lado para asi generar el cubo
             **/
+
+            //Se utilizo array aristas para generer los vectores entre los vertices.
+            //Face3 genera caras de forma distinta, por eso no fue requerido al solo utilizar lineas.
+
             var geometry = new THREE.Geometry();
             var vertices = [
                 new THREE.Vector3((posini[0] + lado/2), (posini[1] + lado/2), (posini[2] + lado/2)),
@@ -81,24 +88,22 @@
                 new THREE.Vector3(lado, lado, lado),
                 new THREE.Vector3((posini[0] + lado/2), lado, lado)
             ];
-
-         
             
-            var aristas = [
+            var arits = [
 
-                [0, 1], [1, 2], [2, 3], [3, 0], 
-                [4, 5], [5, 6], [6, 7], [7, 4], 
-                [0, 4], [1, 5], [2, 6], [3, 7], 
+                [0, 1], [1, 2], [2, 3], [3, 0], // aristas horizontales en la base del cubo
+                [4, 5], [5, 6], [6, 7], [7, 4], // aristas horizontales en la parte superior del cubo
+                [0, 4], [1, 5], [2, 6], [3, 7], // aristas verticales que unen la base con la parte superior
 
             ];
 
-            
+            //ARISTAS DEL CUBO
             var geometry = new THREE.Geometry();
             var material = new THREE.LineBasicMaterial({ color: color });
 
-           
-            for (var i = 0; i < aristas.length; i++) {
-                var edge = aristas[i];
+            //GENERAR ARISTAS
+            for (var i = 0; i < arits.length; i++) {
+                var edge = arits[i];
                 geometry.vertices.push(vertices[edge[0]], vertices[edge[1]]);
             }
 
@@ -107,71 +112,92 @@
             return cubo;
         }
 
-        //Crear cUBO
+        //-----------------------------------------------------------------------------------------------------------------
 
+        //LLAMADO DE LA FUNCIÓN (CUBO)
+
+        //PARÁMETROS
+        //COLOR
+        var col1 = 0xff8000;
+        var col2 = 0xc29b61;
+        var col3 = 0x00ffff;
+        var col4 = 0xffffff;
+        var col5 = 0Xffff00;
+        //MEDIDA DEL LADO 
         var lado = 40; 
-        //CUBO ORIGINAL 
-        var cube = Crear_Cubo([0, 0, 0], lado, 0xff0000);
-        //CUBO TRASLASION
-        var cube_T = Crear_Cubo([0, 0, 0], lado, 0x00ff00);
-        //CUBO ESCALADO
-        var cube_E = Crear_Cubo([0, 0, 0], lado, 0x00ffff);
-        //CUBO ROTADO
-        var cube_R = Crear_Cubo([0, 0, 0], lado, 0X0000ff);
-        //CUBO CON LAS 3 TRASNFORMADAS
-        var cube_F = Crear_Cubo([0, 0, 0], lado, 0xffff00);
+        //LONGITUD DE TRASLACIÓN
+        var tr = 2; //Parámetro para definir la longitud de traslación**
+        //PORCENTAJE DE ESCALADO
+        var pE = 1.5; // Parámetro para de definir el porcentaje de escalado**
 
-        //Matriz de traslacion 
+        //CUBO #1 
+        var c = cubo(origin, lado, col1);
+        //CUBO #2 (TRASLACIÓN)
+        var c_T = cubo(origin, lado, col2);
+        //CUBO #3 (ESCALADO)
+        var c_E = cubo(origin, lado, col3);
+        //CUBO #4 (ROTADO)
+        var c_R = cubo(origin, lado, col4);
+        //CUBO #5 (TODAS LAS TRASNFORMADAS - PRUEBA)
+        var c_F = cubo(origin, lado, col5);
+
+        //TRASLACIÓN
         var traslacion = new THREE.Matrix4();
-        traslacion.set(1, 0, 0, 2*lado,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1);
+        traslacion.set(1, 0, 0, tr*lado,
+                       0, 1, 0, 0,
+                       0, 0, 1, 0,
+                       0, 0, 0, 1);
 
-            cube_T.applyMatrix(traslacion);
-            cube_F.applyMatrix(traslacion);
+            c_T.applyMatrix(traslacion);
+            c_E.applyMatrix(traslacion);
+            c_R.applyMatrix(traslacion);
 
-        //Matriz de escalado
+        //ESCALADO
         var escalado = new THREE.Matrix4();
-        escalado.set(1.5, 0, 0, 0,
-                0, 1.5, 0, 0,
-                0, 0, 1.5, 0,
-                0, 0, 0, 1.5);
+        escalado.set(pE, 0, 0, 0,
+                     0, pE, 0, 0,
+                     0, 0, pE, 0,
+                     0, 0, 0, pE);
 
-            cube_E.applyMatrix(escalado);
-            cube_F.applyMatrix(escalado);
+            c_E.applyMatrix(escalado);
+            c_R.applyMatrix(escalado);
 
-        //Matriz de rotacion
+        //ROTACIÓN
         var pi = 3.14159265359
         var rotacionX = new THREE.Matrix4();
-        var alpha = pi/4;
-        var cs = Math.cos(alpha);   
-        var ss = Math.sin(alpha);
+        // ÁNGULO DE ROTACIÓN
+        var angulo = pi/4; //Parámetro para definir el ángulo de rotación**
+        var cs = Math.cos(angulo);   
+        var ss = Math.sin(angulo);
 
         rotacionX.set(1,  0, 0, 0,
-                0, cs, -ss, 0, 
-                0, ss, cs, 0,
-                0, 0, 0, 1);	
+                    0, cs, -ss, 0, 
+                     0, ss, cs, 0,
+                       0, 0, 0, 1);	
 
-            cube_R.applyMatrix(rotacionX);
-            cube_F.applyMatrix(rotacionX);
+            c_R.applyMatrix(rotacionX);
+            c_F.applyMatrix(rotacionX);
 
         document.body.appendChild(renderer.domElement);
         
         
-        //Añadir los elementos creados a la escena
-        scene.add(cube);
-        scene.add(cube_T);
-        scene.add(cube_E);
-        //scene.add(cube_R);
-        scene.add(cube_F);
-        scene.add(gridHelperXZ);
+        //AGREGAR LOS ELEMNTEOS A LA ESCENA
+        scene.add(c);
+        scene.add(c_T);
+        scene.add(c_E);
+        scene.add(c_R);
+        //scene.add(c_F);
 
         renderer.render(scene, camera);
     }
 
     init();  
     
+    // NOTA: No he podido hacer que las transformas de escalado y rotación, se queden en su origen respectivo. 
+    // El cual es en el que está la transformada de traslación. 
+
+
+
     </script>
   </body>
 </html>
